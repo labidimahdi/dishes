@@ -5,7 +5,7 @@ const fs = require('fs').promises;
 
 const app = express();
 const port = 3000;
-
+// first endpoint: cooking time
 app.get('/cooktime', async (req, res) => {
     try {
         const { ingredient, day } = req.query;
@@ -19,7 +19,7 @@ app.get('/cooktime', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
+// 2nd endpoint: suggestions
 app.get('/suggest', async (req, res) => {
     try {
         const { day } = req.query;
