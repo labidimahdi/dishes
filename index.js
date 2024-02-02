@@ -30,20 +30,21 @@ app.get('/suggest', async (req, res) => {
         res.json(suggestedDish);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error2' });
+        res.status(500).json({ error: 'Internal Server Error 2' });
     }
 });
 // Function to suggest a dish for the specified day
 function suggestDish(prayerTimes, dishes) {
-    const suggestedDish = dishes[0];
-    const asrTime = new Date(`2022-01-01 ${prayerTimes.Asr}`).getTime();
-    const maghribTime = new Date(`2022-01-01 ${prayerTimes.Maghrib}`).getTime();
-    const suggestedCookTime = calculateRelativeTime(asrTime, maghribTime, dish.duration);
+    const randomIndex = Math.floor(Math.random() * dishes.length);
+    const suggestedDish = dishes[randomIndex];
+    const asrTime = convertTimeToMinutes(prayerTimes.Asr);
+    const maghribTime = convertTimeToMinutes(prayerTimes.Maghrib);
+    const suggestedCookTime = calculateRelativeTime(asrTime, maghribTime, suggestedDish.duration);
 
     const response = {
         name: suggestedDish.name,
         ingredients: suggestedDish.ingredients,
-        cooktime: suggestedCookTime,
+        cooktime:  suggestedCookTime
     };
 
     return response;
@@ -67,10 +68,11 @@ async function getPrayerTimes(day) {
             day: day,
             
         },
+        
     });
-
     const prayerTimes = response.data.data[0].timings;
     return prayerTimes;
+    
 }
 // read dishes from file
 async function readDishesInfo() {
@@ -81,24 +83,28 @@ async function readDishesInfo() {
 }
 // calcul cooking time
 function calculateCookingTimes(ingredient, prayerTimes, dishes) {
-    const asrTime = new Date(`2022-01-01 ${prayerTimes.Asr}`).getTime();
-    const maghribTime = new Date(`2022-01-01 ${prayerTimes.Maghrib}`).getTime();
+    const asrTime = convertTimeToMinutes(prayerTimes.Asr);
+    const maghribTime = convertTimeToMinutes(prayerTimes.Maghrib);
     const filteredDishes = dishes.filter(dish => dish.ingredients.includes(ingredient));
     const cookingTimes = filteredDishes.map(dish => ({
         name: dish.name,
-        time: calculateRelativeTime(asrTime, maghribTime, dish.duration),
+        ingredients :dish.ingredients,
+        cooktime: calculateRelativeTime(asrTime, maghribTime, dish.duration),
     }));
-
+  
     return cookingTimes;
 }
-
+function convertTimeToMinutes(time) {
+    const [hours, minutes] = time.split(':');
+    return parseInt(hours) * 60 + parseInt(minutes);
+}
 // calcul relative time
 function calculateRelativeTime(asrTime, maghribTime, duration) {
-    const fifteenMinutesBeforeMaghrib = maghribTime - 15 * 60 * 1000 - duration * 60 * 1000;
+    const fifteenMinutesBeforeMaghrib = maghribTime - 15 ;
     const relativeTime = fifteenMinutesBeforeMaghrib - asrTime;
-    const minutes = Math.floor(relativeTime / (60 * 1000));
+    const timecook = duration - relativeTime ;
 
-    return `${Math.abs(minutes)} minutes ${minutes >= 0 ? 'before' : 'after'} Asr`;
+    return `${Math.abs(timecook)} minutes ${timecook >= 0 ? 'before' : 'after'} Asr`;
 }
 app.listen(port, () => {
     console.log(`Le serveur écoute sur le port ${port}`);
