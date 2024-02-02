@@ -8,19 +8,11 @@ const port = 3000;
 
 app.get('/cooktime', async (req, res) => {
     try {
-        // Extract query parameters
         const { ingredient, day } = req.query;
-
-        // Fetch prayer times from the API
         const prayerTimes = await getPrayerTimes(day);
-
-        // Read dishes information from dishes.json
         const dishes = await readDishesInfo();
-
-        // Calculate cooking times for each dish
         const cookingTimes = calculateCookingTimes(ingredient, prayerTimes, dishes);
 
-        // Respond with the formatted result
         res.json(cookingTimes);
     } catch (error) {
         console.error(error);
@@ -30,19 +22,11 @@ app.get('/cooktime', async (req, res) => {
 
 app.get('/suggest', async (req, res) => {
     try {
-        // Extract query parameters
         const { day } = req.query;
-
-        // Fetch prayer times from the API
         const prayerTimes = await getPrayerTimes(day);
-
-        // Read dishes information from dishes.json
         const dishes = await readDishesInfo();
-
-        // Suggest a dish for the specified day
         const suggestedDish = suggestDish(prayerTimes, dishes);
 
-        // Respond with the suggested dish
         res.json(suggestedDish);
     } catch (error) {
         console.error(error);
@@ -51,15 +35,11 @@ app.get('/suggest', async (req, res) => {
 });
 // Function to suggest a dish for the specified day
 function suggestDish(prayerTimes, dishes) {
-    // Assume you want to suggest the first dish for simplicity
     const suggestedDish = dishes[0];
-
-    // Calculate cooking time for the suggested dish
     const asrTime = new Date(`2022-01-01 ${prayerTimes.Asr}`).getTime();
     const maghribTime = new Date(`2022-01-01 ${prayerTimes.Maghrib}`).getTime();
     const suggestedCookTime = calculateRelativeTime(asrTime, maghribTime, dish.duration);
 
-    // Format the response
     const response = {
         name: suggestedDish.name,
         ingredients: suggestedDish.ingredients,
@@ -74,8 +54,8 @@ async function getPrayerTimes(day) {
 
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1; // Les mois sont indexés à partir de zéro, donc on ajoute 1
-    const city = 'Mecca'; // Utilisez la ville souhaitée
+    const currentMonth = currentDate.getMonth() + 1; 
+    const city = 'Mecca'; 
     const country = 'Saudi Arabia';
     const response = await axios.get('https://api.aladhan.com/v1/calendarByCity', {
         params: {
@@ -103,9 +83,7 @@ async function readDishesInfo() {
 function calculateCookingTimes(ingredient, prayerTimes, dishes) {
     const asrTime = new Date(`2022-01-01 ${prayerTimes.Asr}`).getTime();
     const maghribTime = new Date(`2022-01-01 ${prayerTimes.Maghrib}`).getTime();
-
     const filteredDishes = dishes.filter(dish => dish.ingredients.includes(ingredient));
-
     const cookingTimes = filteredDishes.map(dish => ({
         name: dish.name,
         time: calculateRelativeTime(asrTime, maghribTime, dish.duration),
