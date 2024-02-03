@@ -2,7 +2,6 @@ const express = require('express');
 const axios = require('axios');
 const path = require('path');
 const fs = require('fs').promises;
-
 const app = express();
 const port = 3000;
 // first endpoint: cooking time
@@ -49,7 +48,6 @@ function suggestDish(prayerTimes, dishes) {
 
     return response;
 }
-
 // fetch prayer time api
 async function getPrayerTimes(day) {
 
