@@ -74,7 +74,7 @@ async function getPrayerTimes(day) {
 }
 // read dishes from file
 async function readDishesInfo() {
-    const dishesPath = path.join(__dirname, 'dishes.json');
+    const dishesPath = path.join('dishes.json');
     const fileContent = await fs.readFile(dishesPath, 'utf-8');
     const dishes = JSON.parse(fileContent);
     return dishes;
