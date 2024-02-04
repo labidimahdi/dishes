@@ -105,5 +105,5 @@ function calculateRelativeTime(asrTime, maghribTime, duration) {
     return `${Math.abs(timecook)} minutes ${timecook >= 0 ? 'before' : 'after'} Asr`;
 }
 app.listen(port, () => {
-    console.log(`Le serveur écoute sur le port ${port}`);
+    console.log(`the server listening on port ${port}`);
 });
